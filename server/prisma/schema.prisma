@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+
+  expenses        Expense[]
+  wishlist        WishlistItem[]
+  budget          Budget?
+  categoryBudgets CategoryBudget[]
+}
+
+model Expense {
+  id       Int      @id @default(autoincrement())
+  title    String
+  amount   Float
+  category String
+  dueDate  String?
+  status   String   @default("Pending")
+  createdAt DateTime @default(now())
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+model WishlistItem {
+  id        Int      @id @default(autoincrement())
+  name      String
+  price     Float
+  link      String?
+  priority  String   @default("Medium")
+  purchased Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+model Budget {
+  id            Int   @id @default(autoincrement())
+  weeklyBudget  Float @default(0)
+  monthlyBudget Float @default(0)
+  income        Float @default(0)
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @unique
+}
+
+model CategoryBudget {
+  id       Int    @id @default(autoincrement())
+  category String
+  limit    Float  @default(0)
+  color    String @default("#a855f7")
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@unique([userId, category])
+}
