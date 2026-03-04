@@ -29,6 +29,10 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'GrowWise API is running' });
 });
 
-app.listen(PORT, () => {
-    console.log(`🚀 GrowWise server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`🚀 GrowWise server running on http://localhost:${PORT}`);
+    });
+}
+
+export default app;
